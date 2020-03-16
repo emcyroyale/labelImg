@@ -679,6 +679,7 @@ class MainWindow(QMainWindow, WindowMixin):
         if currIndex < len(self.mImgList):
             filename = self.mImgList[currIndex]
             if filename:
+                print(filename)
                 self.loadFile(filename)
 
     # Add chris
@@ -975,8 +976,10 @@ class MainWindow(QMainWindow, WindowMixin):
             fileWidgetItem = self.fileListWidget.item(index)
             fileWidgetItem.setSelected(True)
 
+        print("loadfile", unicodeFilePath)
         if unicodeFilePath and os.path.exists(unicodeFilePath):
             if LabelFile.isLabelFile(unicodeFilePath):
+                print("loadfile", "Is labelfile")
                 try:
                     self.labelFile = LabelFile(unicodeFilePath)
                 except LabelFileError as e:
@@ -991,6 +994,7 @@ class MainWindow(QMainWindow, WindowMixin):
                 self.fillColor = QColor(*self.labelFile.fillColor)
                 self.canvas.verified = self.labelFile.verified
             else:
+                print("loadfile", "loading image")
                 # Load image:
                 # read data first and store for saving into label file.
                 self.imageData = read(unicodeFilePath, None)
@@ -1023,6 +1027,8 @@ class MainWindow(QMainWindow, WindowMixin):
                     os.path.splitext(self.filePath)[0])
                 xmlPath = os.path.join(self.defaultSaveDir, basename + XML_EXT)
                 txtPath = os.path.join(self.defaultSaveDir, basename + TXT_EXT)
+                
+                print("loadfiledefaultS", txtPath)
 
                 """Annotation file priority:
                 PascalXML > YOLO
@@ -1034,10 +1040,14 @@ class MainWindow(QMainWindow, WindowMixin):
             else:
                 xmlPath = os.path.splitext(filePath)[0] + XML_EXT
                 txtPath = os.path.splitext(filePath)[0] + TXT_EXT
+                newTxtPath = '/'.join(filePath.split('/')[0:-2]) + "/labels" + "/" + os.path.splitext(os.path.basename(filePath))[0] + TXT_EXT
+                print("Try to open label:", newTxtPath)
                 if os.path.isfile(xmlPath):
                     self.loadPascalXMLByFilename(xmlPath)
                 elif os.path.isfile(txtPath):
                     self.loadYOLOTXTByFilename(txtPath)
+                elif os.path.isfile(newTxtPath):
+                    self.loadYOLOTXTByFilename(newTxtPath)
 
             self.setWindowTitle(__appname__ + ' ' + filePath)
 
@@ -1262,6 +1272,7 @@ class MainWindow(QMainWindow, WindowMixin):
             if currIndex + 1 < len(self.mImgList):
                 filename = self.mImgList[currIndex + 1]
 
+        print("Open next image", filename)
         if filename:
             self.loadFile(filename)
 
